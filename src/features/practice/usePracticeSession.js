@@ -45,6 +45,7 @@ export function usePracticeSession(player, videoId, revision = 0) {
   const pausedAtRef = useRef(null);
   const resumeTokenRef = useRef(0);
   const onceRef = useRef(false);
+  const savedTargetRef = useRef(null);
 
   pointARef.current = pointA;
   pointBRef.current = pointB;
@@ -162,6 +163,11 @@ export function usePracticeSession(player, videoId, revision = 0) {
       pauseRepeatRef.current = false;
       setPauseRepeatEnabled(false);
       setOnce(false);
+    } else if (savedTargetRef.current != null) {
+      const previous = savedTargetRef.current;
+      savedTargetRef.current = null;
+      loopTargetRef.current = previous;
+      setLoopTargetState(previous);
     }
     armSession({ seekIfOutside: next });
   }
@@ -174,6 +180,12 @@ export function usePracticeSession(player, videoId, revision = 0) {
       loopEnabledRef.current = false;
       setLoopEnabled(false);
       setOnce(false);
+      if (savedTargetRef.current != null) {
+        const previous = savedTargetRef.current;
+        savedTargetRef.current = null;
+        loopTargetRef.current = previous;
+        setLoopTargetState(previous);
+      }
     }
     armSession({ seekIfOutside: next });
   }
@@ -192,6 +204,47 @@ export function usePracticeSession(player, videoId, revision = 0) {
 
     const keepMode = loopEnabledRef.current || pauseRepeatRef.current;
     setOnce(!keepMode);
+    resetCount();
+    cancelWait();
+    gateRef.current = true;
+    setPhaseBoth('listening');
+    current.seekTo(a);
+    holdPlayback();
+  }
+
+  function playSentence(start, end, { loop = false } = {}) {
+    const current = playerRef.current;
+    if (!current.ready) return;
+    const a = roundTime(start);
+    const b = roundTime(end);
+    if (!isValidSegment(a, b)) return;
+
+    pointARef.current = a;
+    pointBRef.current = b;
+    setPointA(a);
+    setPointB(b);
+    pauseRepeatRef.current = false;
+    setPauseRepeatEnabled(false);
+
+    if (loop) {
+      if (savedTargetRef.current == null) savedTargetRef.current = loopTargetRef.current;
+      loopTargetRef.current = Infinity;
+      setLoopTargetState(Infinity);
+      loopEnabledRef.current = true;
+      setLoopEnabled(true);
+      setOnce(false);
+    } else {
+      loopEnabledRef.current = false;
+      setLoopEnabled(false);
+      if (savedTargetRef.current != null) {
+        const previous = savedTargetRef.current;
+        savedTargetRef.current = null;
+        loopTargetRef.current = previous;
+        setLoopTargetState(previous);
+      }
+      setOnce(true);
+    }
+
     resetCount();
     cancelWait();
     gateRef.current = true;
@@ -299,6 +352,7 @@ export function usePracticeSession(player, videoId, revision = 0) {
     setLoopEnabled(false);
     setPauseRepeatEnabled(false);
     setOnce(false);
+    savedTargetRef.current = null;
     loopsRef.current = 0;
     setLoopsCompleted(0);
     gateRef.current = false;
@@ -441,5 +495,6 @@ export function usePracticeSession(player, videoId, revision = 0) {
     seekBy,
     replay: replayFromA,
     playSegment,
+    playSentence,
   };
 }
