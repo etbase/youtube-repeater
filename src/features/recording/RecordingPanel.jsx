@@ -24,14 +24,18 @@ export default function RecordingPanel({
         <button type="button" className="chip-btn" onClick={recorder.rerecord} disabled={!hasTake || recorder.recording}>
           ↻ 重新錄音
         </button>
-        <button type="button" className="chip-btn" onClick={recorder.download} disabled={!hasTake || recorder.recording}>
-          ↓ MP3 下載
-        </button>
       </div>
       {recorder.error ? <p className="form-error" role="alert">{recorder.error}</p> : null}
       <div className="compare-grid">
         <SentenceTimeline sentence={sentence} currentTime={currentTime} />
-        <RecordingWaveform peaks={recorder.take?.peaks} duration={recorder.take?.duration} />
+        <RecordingWaveform
+          peaks={recorder.take?.peaks}
+          duration={recorder.take?.duration}
+          playbackTime={recorder.playbackTime}
+          playing={recorder.playing}
+          canDownload={hasTake && !recorder.recording}
+          onDownload={recorder.download}
+        />
       </div>
     </section>
   );

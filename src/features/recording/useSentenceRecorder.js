@@ -22,6 +22,7 @@ export function useSentenceRecorder(sentenceId) {
   const [takes, setTakes] = useState({});
   const [error, setError] = useState('');
   const [playing, setPlaying] = useState(false);
+  const [playbackTime, setPlaybackTime] = useState(0);
   const recorderRef = useRef(null);
   const streamRef = useRef(null);
   const audioRef = useRef(null);
@@ -32,6 +33,12 @@ export function useSentenceRecorder(sentenceId) {
     audioRef.current?.pause();
     streamRef.current?.getTracks().forEach((track) => track.stop());
   }, []);
+
+  useEffect(() => {
+    audioRef.current?.pause();
+    setPlaying(false);
+    setPlaybackTime(0);
+  }, [sentenceId]);
 
   function stopStream() {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -100,7 +107,12 @@ export function useSentenceRecorder(sentenceId) {
     audioRef.current?.pause();
     const audio = new Audio(take.url);
     audioRef.current = audio;
-    audio.onended = () => setPlaying(false);
+    setPlaybackTime(0);
+    audio.ontimeupdate = () => setPlaybackTime(audio.currentTime);
+    audio.onended = () => {
+      setPlaying(false);
+      setPlaybackTime(0);
+    };
     audio.onerror = () => setPlaying(false);
     setPlaying(true);
     audio.play().catch(() => setPlaying(false));
@@ -120,6 +132,7 @@ export function useSentenceRecorder(sentenceId) {
   return {
     recording,
     playing,
+    playbackTime,
     error,
     take,
     start,

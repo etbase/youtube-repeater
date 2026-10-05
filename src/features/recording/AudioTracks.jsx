@@ -11,7 +11,9 @@ export function SentenceTimeline({ sentence, currentTime }) {
 
   return (
     <div className="track-block">
-      <p className="control-label">目前句子播放時間軸</p>
+      <div className="track-head">
+        <p className="control-label">目前句子</p>
+      </div>
       <div className="sentence-track" aria-hidden="true">
         <span className="sentence-playhead" style={{ left: `${progress * 100}%` }} />
       </div>
@@ -23,7 +25,7 @@ export function SentenceTimeline({ sentence, currentTime }) {
   );
 }
 
-export function RecordingWaveform({ peaks, duration }) {
+export function RecordingWaveform({ peaks, duration, playbackTime = 0, playing = false, onDownload, canDownload = false }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -47,10 +49,22 @@ export function RecordingWaveform({ peaks, duration }) {
     return undefined;
   }, [peaks]);
 
+  const progress = duration > 0 ? Math.min(1, Math.max(0, playbackTime / duration)) : 0;
+
   return (
     <div className="track-block">
-      <p className="control-label">我的錄音波形</p>
-      <canvas ref={canvasRef} className="wave-canvas" width="640" height="72" />
+      <div className="track-head">
+        <p className="control-label">我的錄音</p>
+        <button type="button" className="chip-btn" onClick={onDownload} disabled={!canDownload}>
+          ↓ 下載我的錄音
+        </button>
+      </div>
+      <div className="wave-frame">
+        <canvas ref={canvasRef} className="wave-canvas" width="640" height="72" />
+        {playing && duration > 0 ? (
+          <span className="sentence-playhead" style={{ left: `${progress * 100}%` }} />
+        ) : null}
+      </div>
       <div className="track-scale">
         <span>0s</span>
         <span>{duration ? `${duration.toFixed(1)}s` : '尚無錄音'}</span>

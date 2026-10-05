@@ -709,8 +709,16 @@ button.sentence-time {
 }
 
 .compare-grid {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   margin-top: 14px;
+}
+
+.track-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
 }
 
 .track-block {
@@ -739,6 +747,19 @@ button.sentence-time {
   border-radius: 99px;
   background: var(--blue);
   transform: translateX(-1px);
+}
+
+.wave-frame {
+  position: relative;
+  margin-top: 8px;
+}
+
+.wave-frame .wave-canvas {
+  margin-top: 0;
+}
+
+.wave-frame .sentence-playhead {
+  position: absolute;
 }
 
 .wave-canvas {
@@ -774,10 +795,6 @@ button.sentence-time {
   .sentence-list {
     flex: none;
     max-height: 420px;
-  }
-
-  .compare-grid {
-    grid-template-columns: minmax(0, 1fr);
   }
 
   .brand-meta {
