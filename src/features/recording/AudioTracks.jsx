@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { IconDownload } from '../../components/Icons.jsx';
 
 export function SentenceTimeline({ sentence, currentTime }) {
   const start = sentence?.start ?? 0;
@@ -34,13 +35,16 @@ export function RecordingWaveform({ peaks, duration, playbackTime = 0, playing =
     const context = canvas.getContext('2d');
     const width = canvas.width;
     const height = canvas.height;
+    const styles = getComputedStyle(document.documentElement);
+    const surface = styles.getPropertyValue('--surface-soft').trim() || '#f4f5f8';
+    const primary = styles.getPropertyValue('--primary').trim() || '#6d7ec4';
     context.clearRect(0, 0, width, height);
-    context.fillStyle = '#e8eef6';
+    context.fillStyle = surface;
     context.fillRect(0, 0, width, height);
     if (!peaks?.length) return undefined;
     const gap = 2;
     const barWidth = Math.max(1, (width - gap * (peaks.length - 1)) / peaks.length);
-    context.fillStyle = '#2f6bff';
+    context.fillStyle = primary;
     peaks.forEach((peak, index) => {
       const barHeight = Math.max(2, peak * (height - 8));
       const x = index * (barWidth + gap);
@@ -56,7 +60,8 @@ export function RecordingWaveform({ peaks, duration, playbackTime = 0, playing =
       <div className="track-head">
         <p className="control-label">我的錄音</p>
         <button type="button" className="chip-btn" onClick={onDownload} disabled={!canDownload}>
-          ↓ 下載我的錄音
+          <IconDownload />
+          <span>下載我的錄音</span>
         </button>
       </div>
       <div className="wave-frame">

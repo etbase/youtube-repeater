@@ -1,3 +1,4 @@
+import { IconMic, IconPlay, IconRotateCcw, IconSquare } from '../../components/Icons.jsx';
 import { RecordingWaveform, SentenceTimeline } from './AudioTracks.jsx';
 
 export default function RecordingPanel({
@@ -12,17 +13,21 @@ export default function RecordingPanel({
     <section className="record-card" aria-label="跟讀練習與錄音">
       <h2>跟讀練習與錄音</h2>
       <div className="record-actions">
-        <button type="button" className="chip-btn is-play" onClick={recorder.start} disabled={!canRecord}>
-          🎤 開始錄音
+        <button type="button" className="chip-btn" onClick={recorder.start} disabled={!canRecord}>
+          <IconMic />
+          <span>開始錄音</span>
         </button>
         <button type="button" className="chip-btn" onClick={recorder.stop} disabled={!recorder.recording}>
-          ■ 停止錄音
+          <IconSquare />
+          <span>停止錄音</span>
         </button>
         <button type="button" className="chip-btn" onClick={recorder.play} disabled={!hasTake || recorder.recording}>
-          ▶ 播放錄音
+          <IconPlay />
+          <span>播放錄音</span>
         </button>
         <button type="button" className="chip-btn" onClick={recorder.rerecord} disabled={!hasTake || recorder.recording}>
-          ↻ 重新錄音
+          <IconRotateCcw />
+          <span>重新錄音</span>
         </button>
       </div>
       {recorder.error ? <p className="form-error" role="alert">{recorder.error}</p> : null}

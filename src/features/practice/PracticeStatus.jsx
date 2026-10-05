@@ -1,3 +1,5 @@
+import { IconPlay, IconRepeat, IconRotateCcw } from '../../components/Icons.jsx';
+
 export default function PracticeStatus({ practice }) {
   if (practice.phase === 'idle') return null;
   if (practice.phase === 'listening' && !practice.mode) return null;
@@ -5,11 +7,12 @@ export default function PracticeStatus({ practice }) {
   if (practice.phase === 'complete') {
     return (
       <div className="status-banner" role="status">
-        <div>
-          <p className="status-kicker">完成</p>
-          <p className="status-title">這一段練完了</p>
-        </div>
-        <button type="button" className="btn btn-light" data-action="replay" onClick={practice.replay}>
+        <IconRotateCcw />
+        <p className="status-title">
+          <span className="status-kicker">完成</span>
+          這一段練完了
+        </p>
+        <button type="button" className="chip-btn" data-action="replay" onClick={practice.replay}>
           再練一次
         </button>
       </div>
@@ -17,13 +20,15 @@ export default function PracticeStatus({ practice }) {
   }
 
   const looping = practice.mode === 'loop';
+  const StatusIcon = looping ? IconRepeat : IconPlay;
 
   return (
     <div className="status-banner" role="status" data-phase={practice.phase}>
-      <div>
-        <p className="status-kicker">{looping ? '循環' : '聆聽'}</p>
-        <p className="status-title">{looping ? '循環播放中' : '正在播放這一句'}</p>
-      </div>
+      <StatusIcon />
+      <p className="status-title">
+        <span className="status-kicker">{looping ? '循環' : '聆聽'}</span>
+        {looping ? '循環播放中' : '正在播放這一句'}
+      </p>
     </div>
   );
 }

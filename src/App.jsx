@@ -92,8 +92,15 @@ export default function App() {
         <div className="topbar-inner">
           <div className="brand">
             <span className="brand-mark" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d="M9 7.2v9.6L17.2 12 9 7.2z" fill="currentColor" />
+              <svg viewBox="0 0 36 36">
+                <defs>
+                  <linearGradient id="brand-fill" x1="6" y1="2" x2="30" y2="34" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#8B9AD4" />
+                    <stop offset="1" stopColor="#6D7EC4" />
+                  </linearGradient>
+                </defs>
+                <rect width="36" height="36" rx="12" fill="url(#brand-fill)" />
+                <path d="M14.2 11.2v13.6L25.4 18 14.2 11.2z" fill="#fff" />
               </svg>
             </span>
             <div className="brand-copy">

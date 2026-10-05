@@ -1,5 +1,5 @@
 import { formatClock } from '../../lib/formatTime.js';
-import { IconPause, IconPlay } from '../../components/Icons.jsx';
+import { IconPause, IconPlay, IconRepeat, IconRotateCcw, IconSkipBack, IconSkipForward } from '../../components/Icons.jsx';
 import SpeedControl from './SpeedControl.jsx';
 
 function playLabel(isPlaying, phase) {
@@ -10,7 +10,9 @@ function playLabel(isPlaying, phase) {
 
 export default function TransportBar({ player, practice }) {
   const label = playLabel(player.isPlaying, practice.phase);
-  const PlayIcon = player.isPlaying ? IconPause : IconPlay;
+  let PlayIcon = IconPlay;
+  if (player.isPlaying) PlayIcon = IconPause;
+  else if (practice.phase === 'complete') PlayIcon = IconRotateCcw;
   const canMark = player.ready;
 
   return (
@@ -24,7 +26,8 @@ export default function TransportBar({ player, practice }) {
           onClick={() => practice.seekBy(-5)}
           disabled={!player.ready}
         >
-          <span aria-hidden="true">◀ 5s</span>
+          <IconSkipBack />
+          <span>5s</span>
         </button>
         <button
           type="button"
@@ -45,7 +48,8 @@ export default function TransportBar({ player, practice }) {
           onClick={() => practice.seekBy(5)}
           disabled={!player.ready}
         >
-          <span aria-hidden="true">5s ▶</span>
+          <span>5s</span>
+          <IconSkipForward />
         </button>
         <button
           type="button"
@@ -73,7 +77,8 @@ export default function TransportBar({ player, practice }) {
           disabled={!practice.segmentValid && !practice.loopEnabled}
           onClick={() => practice.setLoopEnabled(!practice.loopEnabled)}
         >
-          AB 循環
+          <IconRepeat />
+          <span>AB 循環</span>
         </button>
         <p className="time-readout">
           <span className="time-now">{formatClock(player.currentTime)}</span>
