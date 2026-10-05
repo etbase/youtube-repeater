@@ -28,10 +28,12 @@ npm run build
 
 ## GitHub Pages
 
-正式部署時把站點路徑傳給建置：
+推上 `main` 後，GitHub Actions 會自動建置並發布到：
+
+https://etbase.github.io/youtube-repeater/
+
+本機開發維持 `npm run dev`，不需要改路徑。若要在自己的電腦模擬 Pages 建置：
 
 ```bash
 VITE_PAGES_BASE=/youtube-repeater/ npm run build
 ```
-
-若使用 `username.github.io` 這類根網域，維持預設的 `/` 即可。
