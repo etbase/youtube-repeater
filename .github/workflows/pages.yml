@@ -36,7 +36,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          VITE_PAGES_BASE: /${{ github.event.repository.name }}/
+          VITE_PAGES_BASE: ./
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
