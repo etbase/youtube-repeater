@@ -3,14 +3,22 @@ import { formatClock } from '../../lib/formatTime.js';
 import { parseSubtitleFile } from './parseSubtitles.js';
 import { prepareCues, sliceCues } from './subtitleText.js';
 
-function scrollInside(container, child) {
-  const top = child.offsetTop;
-  const bottom = top + child.offsetHeight;
-  if (top < container.scrollTop) {
-    container.scrollTop = Math.max(0, top - 8);
-  } else if (bottom > container.scrollTop + container.clientHeight) {
-    container.scrollTop = bottom - container.clientHeight + 8;
-  }
+function scrollActiveSentence(container, child) {
+  const viewHeight = container.clientHeight;
+  if (viewHeight <= 0) return;
+  const childTop = child.offsetTop;
+  const childHeight = child.offsetHeight;
+  const viewTop = container.scrollTop;
+  const fullyVisible = childTop >= viewTop && childTop + childHeight <= viewTop + viewHeight;
+  const centerDelta = (childTop + childHeight / 2) - (viewTop + viewHeight / 2);
+  if (fullyVisible && Math.abs(centerDelta) < viewHeight * 0.22) return;
+
+  const nextTop = Math.max(0, childTop - (viewHeight - childHeight) / 2);
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  container.scrollTo({
+    top: nextTop,
+    behavior: reduceMotion ? 'auto' : 'smooth',
+  });
 }
 
 export default function TranscriptPanel({
@@ -32,9 +40,27 @@ export default function TranscriptPanel({
   const [importError, setImportError] = useState('');
 
   useEffect(() => {
-    if (!activeId || !listRef.current) return;
-    const node = listRef.current.querySelector(`[data-sentence-id="${activeId}"]`);
-    if (node) scrollInside(listRef.current, node);
+    const container = listRef.current;
+    if (!activeId || !container) return undefined;
+
+    let cancelled = false;
+    const scroll = () => {
+      if (cancelled || container.clientHeight <= 0) return false;
+      const node = container.querySelector(`[data-sentence-id="${CSS.escape(activeId)}"]`);
+      if (!node) return false;
+      scrollActiveSentence(container, node);
+      return true;
+    };
+
+    if (scroll()) return undefined;
+    const observer = new ResizeObserver(() => {
+      if (scroll()) observer.disconnect();
+    });
+    observer.observe(container);
+    return () => {
+      cancelled = true;
+      observer.disconnect();
+    };
   }, [activeId]);
 
   function publish(cues) {

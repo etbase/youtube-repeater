@@ -16,6 +16,10 @@
   --line: var(--border);
   --page: #f3f4f7;
   --card: var(--surface);
+  --accent: #c85c5c;
+  --accent-hover: #b94f4f;
+  --subtitle-active-bg: #fff4f2;
+  --subtitle-active-border: #e7a09a;
   --shadow: 0 1px 2px rgba(44, 51, 68, 0.04), 0 8px 22px rgba(44, 51, 68, 0.04);
   --radius: 16px;
   --font: "Avenir Next", "Segoe UI", "PingFang TC", "Hiragino Sans", "Noto Sans TC", sans-serif;
@@ -453,8 +457,9 @@ h1 {
 .transcript-card {
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  height: auto;
+  /* Let the left player column size this row, then fill it and scroll inside. */
+  height: 0;
+  min-height: 100%;
   overflow: hidden;
   padding: 16px 16px 12px;
 }
@@ -519,13 +524,32 @@ h1 {
   position: relative;
   flex: 1 1 auto;
   min-height: 0;
-  overflow: auto;
-  padding-right: 2px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+  scrollbar-gutter: stable;
+  scrollbar-width: auto;
+  scrollbar-color: #c5cad6 transparent;
+}
+
+.sentence-list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.sentence-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sentence-list::-webkit-scrollbar-thumb {
+  border: 2px solid var(--surface);
+  border-radius: 99px;
+  background: #c5cad6;
 }
 
 .sentence-card {
-  padding: 12px 14px 11px 16px;
-  border: 0;
+  padding: 12px 14px 11px;
+  border: 1px solid transparent;
   border-radius: 12px;
   background: var(--surface-soft);
   box-shadow: none;
@@ -538,8 +562,9 @@ h1 {
 
 .sentence-card.is-active,
 .sentence-card.is-active:hover {
-  background: var(--primary-soft);
-  box-shadow: inset 3px 0 0 var(--primary);
+  background: var(--subtitle-active-bg);
+  border-color: var(--subtitle-active-border);
+  box-shadow: none;
 }
 
 .sentence-card[data-type="sound"] .sentence-body {
@@ -557,10 +582,16 @@ h1 {
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--blue);
+  color: var(--accent);
   font-size: 0.92rem;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
+}
+
+.sentence-card:hover .sentence-time,
+.sentence-card.is-active .sentence-time,
+.current-copy .sentence-time {
+  color: var(--accent-hover);
 }
 
 .sentence-body {
@@ -620,8 +651,11 @@ button.sentence-time {
 }
 
 .manual-import {
+  flex: 0 1 auto;
+  max-height: min(240px, 42%);
   margin-bottom: 12px;
   padding: 8px 12px 12px;
+  overflow: auto;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: #f8fafc;
@@ -810,12 +844,16 @@ button.sentence-time {
 
   .stage-card { grid-row: 1; }
   .current-card { grid-row: 2; }
-  .transcript-card { grid-row: 3; height: auto; }
+  .transcript-card {
+    grid-row: 3;
+    height: auto;
+    min-height: 0;
+  }
   .record-card { grid-row: 4; }
 
   .sentence-list {
     flex: none;
-    max-height: 420px;
+    max-height: min(70vh, 480px);
   }
 
   .brand-meta {

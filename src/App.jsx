@@ -53,6 +53,12 @@ export default function App() {
     && Math.abs((practice.pointA ?? 0) - currentSentence.start) < 0.05
     && Math.abs((practice.pointB ?? 0) - currentSentence.end) < 0.05,
   );
+  const sentencePlaying = Boolean(
+    currentSentence
+    && player.isPlaying
+    && player.currentTime >= currentSentence.start - 0.2
+    && player.currentTime < currentSentence.end + 0.05,
+  );
 
   useEffect(() => {
     const videoId = session?.videoId;
@@ -143,8 +149,16 @@ export default function App() {
           index={sentenceIndex}
           total={sentences.length}
           looping={sentenceLoopOn}
+          playing={sentencePlaying}
           canPlay={player.ready}
-          onPlay={() => currentSentence && chooseSentence(currentSentence, { loop: false })}
+          onPlay={() => {
+            if (!currentSentence) return;
+            if (sentencePlaying) {
+              practice.togglePlay();
+              return;
+            }
+            chooseSentence(currentSentence, { loop: false });
+          }}
           onToggleLoop={() => {
             if (!currentSentence) return;
             chooseSentence(currentSentence, { loop: !sentenceLoopOn });
