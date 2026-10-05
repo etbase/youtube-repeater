@@ -73,11 +73,18 @@ export default function App() {
     getTranscript(videoId)
       .then((cues) => {
         if (cancelled) return;
-        setSentences(assignCueIds(prepareCues(cues, 'smart')));
-        setTranscriptStatus('ready');
+        try {
+          setSentences(assignCueIds(prepareCues(cues, 'smart')));
+          setTranscriptStatus('ready');
+        } catch {
+          setSentences([]);
+          setTranscriptStatus('error');
+          setManualOpen(true);
+        }
       })
       .catch(() => {
         if (cancelled) return;
+        setSentences([]);
         setTranscriptStatus('error');
         setManualOpen(true);
       });

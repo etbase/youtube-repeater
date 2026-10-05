@@ -42,6 +42,73 @@ test('strips speaker arrows from caption text', () => {
   assert.equal(cleanCaptionText('  >>   Why?  '), 'Why?');
 });
 
+test('moves a trailing fragment onto the following sentence', () => {
+  const cues = prepareCues([
+    { start: 10, end: 14, text: 'Just rest. Just be. I will' },
+    { start: 16, end: 20, text: 'be here again soon with another gentle story.' },
+  ]);
+
+  assert.deepEqual(cues.map((cue) => cue.text), [
+    'Just rest. Just be.',
+    'I will be here again soon with another gentle story.',
+  ]);
+  assert.equal(cues[0].start, 10);
+  assert.equal(cues[0].end, 14);
+  assert.equal(cues[1].start, 16);
+  assert.equal(cues[1].end, 20);
+});
+
+test('joins separate caption fragments with the outer timestamps', () => {
+  const cues = prepareCues([
+    { start: 10, end: 12, text: 'I will' },
+    { start: 12, end: 15, text: 'be here again soon.' },
+  ]);
+
+  assert.equal(cues.length, 1);
+  assert.equal(cues[0].text, 'I will be here again soon.');
+  assert.equal(cues[0].start, 10);
+  assert.equal(cues[0].end, 15);
+});
+
+test('keeps two complete sentences that share one caption on that caption', () => {
+  const cues = prepareCues([
+    { start: 4, end: 9, text: 'Just rest. Just be.' },
+  ]);
+
+  assert.equal(cues.length, 1);
+  assert.equal(cues[0].text, 'Just rest. Just be.');
+  assert.equal(cues[0].start, 4);
+  assert.equal(cues[0].end, 9);
+});
+
+test('does not split names, and a sound cue does not block the sentence', () => {
+  const named = prepareCues([
+    { start: 1, end: 3, text: 'Meet Mr. Smith today.' },
+  ]);
+  assert.equal(named[0].text, 'Meet Mr. Smith today.');
+
+  const cues = prepareCues([
+    { start: 1, end: 2, text: 'I will' },
+    { start: 2, end: 3, text: '[Music]' },
+    { start: 3, end: 5, text: 'be right back.' },
+  ]);
+  assert.deepEqual(cues.map((cue) => [cue.text, cue.start, cue.end]), [
+    ['I will be right back.', 1, 5],
+    ['[Music]', 2, 3],
+  ]);
+});
+
+test('does not cut a finished sentence just because it is long', () => {
+  const text = `This is a long but finished sentence about practicing English carefully, with enough words to pass the old limit, and it still ends once. ${'word '.repeat(40)}done.`;
+  const cues = prepareCues([
+    { start: 1, end: 8, text: text.trim() },
+    { start: 8, end: 12, text: 'Next sentence starts here.' },
+  ]);
+  assert.equal(cues.length, 2);
+  assert.equal(cues[0].text.endsWith('done.'), true);
+  assert.equal(cues[1].text, 'Next sentence starts here.');
+});
+
 test('limits an import window without moving the timestamps', () => {
   const cues = [
     { start: 10, end: 12, text: 'early' },

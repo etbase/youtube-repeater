@@ -87,19 +87,19 @@ export default function TranscriptPanel({
   }
 
   return (
-    <aside className="transcript-card" aria-label="即時字幕">
+    <aside className="transcript-card" aria-label="即時字幕" aria-busy={status === 'loading'}>
       <header className="transcript-head">
         <div>
           <h2>即時字幕</h2>
           <p>跟著影片自動捲動・點任一句，只播放該句。</p>
         </div>
-        <span className="sentence-count">{sentences.length} 句</span>
+        {status === 'ready' ? <span className="sentence-count">{sentences.length} 句</span> : null}
       </header>
 
       {status === 'loading' ? (
-        <div className="transcript-status" role="status">
-          <p>正在取得字幕...</p>
-          <p>Loading subtitles...</p>
+        <div className="transcript-status is-loading" role="status">
+          <span className="spinner" aria-hidden="true" />
+          <p>正在載入字幕…</p>
         </div>
       ) : null}
 
