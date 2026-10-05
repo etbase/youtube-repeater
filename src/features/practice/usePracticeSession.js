@@ -273,7 +273,8 @@ export function usePracticeSession(player, videoId, revision = 0) {
         stopPlaybackHold();
         current.pause();
         if (decision.seekTo != null) current.seekTo(decision.seekTo);
-        setPhaseBoth('complete');
+        setOnce(false);
+        setPhaseBoth('idle');
       }
     };
 

@@ -1,9 +1,8 @@
 import { IconMic, IconPlay, IconRotateCcw, IconSquare } from '../../components/Icons.jsx';
-import { RecordingWaveform, SentenceTimeline } from './AudioTracks.jsx';
+import { RecordingWaveform } from './AudioTracks.jsx';
 
 export default function RecordingPanel({
   sentence,
-  currentTime,
   recorder,
 }) {
   const hasTake = Boolean(recorder.take);
@@ -32,7 +31,6 @@ export default function RecordingPanel({
       </div>
       {recorder.error ? <p className="form-error" role="alert">{recorder.error}</p> : null}
       <div className="compare-grid">
-        <SentenceTimeline sentence={sentence} currentTime={currentTime} />
         <RecordingWaveform
           peaks={recorder.take?.peaks}
           duration={recorder.take?.duration}

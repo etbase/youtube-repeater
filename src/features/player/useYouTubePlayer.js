@@ -161,7 +161,7 @@ export function useYouTubePlayer(session) {
       try {
         const time = player.getCurrentTime();
         if (typeof time === 'number' && !Number.isNaN(time)) {
-          setCurrentTime((prev) => (Math.abs(prev - time) < 0.04 ? prev : time));
+          setCurrentTime((prev) => (Math.abs(prev - time) < 0.001 ? prev : time));
         }
         const nextDuration = player.getDuration?.();
         if (typeof nextDuration === 'number' && nextDuration > 0) {

@@ -1,31 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { IconDownload } from '../../components/Icons.jsx';
 
-export function SentenceTimeline({ sentence, currentTime }) {
-  const start = sentence?.start ?? 0;
-  const end = sentence?.end ?? start;
-  const length = Math.max(0, end - start);
-  let progress = 0;
-  if (sentence && length > 0) {
-    progress = Math.min(1, Math.max(0, (currentTime - start) / length));
-  }
-
-  return (
-    <div className="track-block">
-      <div className="track-head">
-        <p className="control-label">目前句子</p>
-      </div>
-      <div className="sentence-track" aria-hidden="true">
-        <span className="sentence-playhead" style={{ left: `${progress * 100}%` }} />
-      </div>
-      <div className="track-scale">
-        <span>0s</span>
-        <span>{length ? `${length.toFixed(1)}s` : '0s'}</span>
-      </div>
-    </div>
-  );
-}
-
 export function RecordingWaveform({ peaks, duration, playbackTime = 0, playing = false, onDownload, canDownload = false }) {
   const canvasRef = useRef(null);
 

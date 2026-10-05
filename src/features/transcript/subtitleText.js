@@ -187,14 +187,18 @@ export function prepareCues(cues, mode = 'smart') {
       }
 
       const start = open.continueFromNext ? cue.start : open.start;
+      const rest = complete.slice(1);
+      const laterInCue = rest.length > 0 || Boolean(tail);
+      let end = cue.end;
+      if (laterInCue && start < cue.start) end = cue.start;
+      if (end <= start) end = cue.end;
       pushSentence({
         start,
-        end: cue.end,
+        end,
         text: joinText(open.text, complete[0]),
         kind: 'speech',
       });
       open = null;
-      const rest = complete.slice(1);
       if (rest.length) {
         pushSentence({
           start: cue.start,
@@ -236,8 +240,36 @@ export function prepareCues(cues, mode = 'smart') {
   }
 
   closeOpen();
-  output.sort((left, right) => left.start - right.start);
-  return output;
+  return separateOverlaps(output);
+}
+
+function separateOverlaps(items) {
+  const speech = items.filter((item) => item.kind !== 'sound');
+  const sounds = items.filter((item) => item.kind === 'sound');
+  speech.sort((left, right) => left.start - right.start || left.end - right.end);
+  for (let index = 0; index < speech.length - 1; index += 1) {
+    const current = speech[index];
+    const next = speech[index + 1];
+    if (next.start > current.start && current.end > next.start) {
+      current.end = next.start;
+    }
+  }
+  return [...speech, ...sounds].sort((left, right) => left.start - right.start || left.end - right.end);
+}
+
+export function sentenceAtTime(sentences, time) {
+  if (!Number.isFinite(time)) return null;
+  let chosen = null;
+  for (const sentence of sentences) {
+    if (time < sentence.start || time >= sentence.end) continue;
+    const moreSpecific = chosen
+      && (
+        sentence.start > chosen.start
+        || (sentence.start === chosen.start && sentence.end < chosen.end)
+      );
+    if (!chosen || moreSpecific) chosen = sentence;
+  }
+  return chosen;
 }
 
 export function sliceCues(cues, startAt, lengthSeconds) {

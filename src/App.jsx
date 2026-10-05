@@ -8,7 +8,7 @@ import PracticeStatus from './features/practice/PracticeStatus.jsx';
 import CurrentSentence from './features/practice/CurrentSentence.jsx';
 import TranscriptPanel from './features/transcript/TranscriptPanel.jsx';
 import { getTranscript } from './features/transcript/subtitleService.js';
-import { prepareCues } from './features/transcript/subtitleText.js';
+import { prepareCues, sentenceAtTime } from './features/transcript/subtitleText.js';
 import { usePracticeSession } from './features/practice/usePracticeSession.js';
 import RecordingPanel from './features/recording/RecordingPanel.jsx';
 import { useSentenceRecorder } from './features/recording/useSentenceRecorder.js';
@@ -28,7 +28,7 @@ export default function App() {
   const [sentences, setSentences] = useState([]);
   const [transcriptStatus, setTranscriptStatus] = useState('idle');
   const [manualOpen, setManualOpen] = useState(false);
-  const [pinnedId, setPinnedId] = useState(null);
+  const [practiceId, setPracticeId] = useState(null);
   const player = useYouTubePlayer(session);
   const practice = usePracticeSession(
     player,
@@ -36,28 +36,25 @@ export default function App() {
     session?.revision ?? 0,
   );
 
-  const timedSentence = sentences.find((sentence) => (
-    player.currentTime >= sentence.start && player.currentTime < sentence.end
-  ));
-  const currentSentence = timedSentence
-    || sentences.find((sentence) => sentence.id === pinnedId)
-    || null;
-  const activeId = timedSentence?.id || pinnedId;
-  const recorder = useSentenceRecorder(currentSentence?.id ?? null);
-  const sentenceIndex = currentSentence
-    ? sentences.findIndex((sentence) => sentence.id === currentSentence.id) + 1
+  const activeSentence = sentenceAtTime(sentences, player.currentTime);
+  const practiceSentence = sentences.find((sentence) => sentence.id === practiceId) || null;
+  const recorder = useSentenceRecorder(practiceSentence?.id ?? null);
+  const sentenceIndex = practiceSentence
+    ? sentences.findIndex((sentence) => sentence.id === practiceSentence.id) + 1
     : 0;
-  const sentenceLoopOn = Boolean(
-    currentSentence
-    && practice.loopEnabled
-    && Math.abs((practice.pointA ?? 0) - currentSentence.start) < 0.05
-    && Math.abs((practice.pointB ?? 0) - currentSentence.end) < 0.05,
+  const samePracticeRange = Boolean(
+    practiceSentence
+    && practice.pointA != null
+    && practice.pointB != null
+    && Math.abs(practice.pointA - practiceSentence.start) < 0.05
+    && Math.abs(practice.pointB - practiceSentence.end) < 0.05,
   );
-  const sentencePlaying = Boolean(
-    currentSentence
-    && player.isPlaying
-    && player.currentTime >= currentSentence.start - 0.2
-    && player.currentTime < currentSentence.end + 0.05,
+  const sentenceLoopOn = Boolean(samePracticeRange && practice.loopEnabled && practice.mode === 'loop');
+  const originalPlaying = Boolean(
+    samePracticeRange
+    && practice.mode === 'once'
+    && practice.phase === 'listening'
+    && player.isPlaying,
   );
 
   useEffect(() => {
@@ -66,7 +63,7 @@ export default function App() {
 
     let cancelled = false;
     setSentences([]);
-    setPinnedId(null);
+    setPracticeId(null);
     setTranscriptStatus('loading');
     setManualOpen(false);
 
@@ -95,8 +92,23 @@ export default function App() {
   }, [session?.videoId, session?.revision]);
 
   function chooseSentence(sentence, { loop = false } = {}) {
-    setPinnedId(sentence.id);
+    setPracticeId(sentence.id);
     practice.playSentence(sentence.start, sentence.end, { loop });
+  }
+
+  function playOriginal() {
+    if (!practiceSentence || !player.ready) return;
+    const inside = player.currentTime >= practiceSentence.start
+      && player.currentTime < practiceSentence.end - 0.05;
+    if (originalPlaying) {
+      practice.togglePlay();
+      return;
+    }
+    if (samePracticeRange && practice.mode === 'once' && practice.phase === 'listening' && inside) {
+      practice.togglePlay();
+      return;
+    }
+    chooseSentence(practiceSentence, { loop: false });
   }
 
   return (
@@ -139,42 +151,34 @@ export default function App() {
 
         <TranscriptPanel
           sentences={sentences}
-          activeId={activeId}
+          activeId={activeSentence?.id || null}
           status={transcriptStatus}
           manualOpen={manualOpen}
           onManualOpenChange={setManualOpen}
           onPlay={(sentence) => chooseSentence(sentence, { loop: sentenceLoopOn })}
           onImport={(cues) => {
             setSentences(cues);
-            setPinnedId(cues[0]?.id ?? null);
+            setPracticeId(null);
             setTranscriptStatus('ready');
           }}
         />
 
         <CurrentSentence
-          sentence={currentSentence}
+          sentence={practiceSentence}
           index={sentenceIndex}
           total={sentences.length}
           looping={sentenceLoopOn}
-          playing={sentencePlaying}
+          playing={originalPlaying}
           canPlay={player.ready}
-          onPlay={() => {
-            if (!currentSentence) return;
-            if (sentencePlaying) {
-              practice.togglePlay();
-              return;
-            }
-            chooseSentence(currentSentence, { loop: false });
-          }}
+          onPlay={playOriginal}
           onToggleLoop={() => {
-            if (!currentSentence) return;
-            chooseSentence(currentSentence, { loop: !sentenceLoopOn });
+            if (!practiceSentence) return;
+            chooseSentence(practiceSentence, { loop: !sentenceLoopOn });
           }}
         />
 
         <RecordingPanel
-          sentence={currentSentence}
-          currentTime={player.currentTime}
+          sentence={practiceSentence}
           recorder={recorder}
         />
       </main>

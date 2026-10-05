@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { cleanCaptionText, cueKind, prepareCues, sliceCues } from './subtitleText.js';
+import { cleanCaptionText, cueKind, prepareCues, sentenceAtTime, sliceCues } from './subtitleText.js';
 
 test('joins broken auto-captions into one sentence and keeps the outer times', () => {
   const cues = prepareCues([
@@ -107,6 +107,23 @@ test('does not cut a finished sentence just because it is long', () => {
   assert.equal(cues.length, 2);
   assert.equal(cues[0].text.endsWith('done.'), true);
   assert.equal(cues[1].text, 'Next sentence starts here.');
+});
+
+test('does not leave later sentences inside an earlier sentence range', () => {
+  const cues = prepareCues([
+    { start: 6, end: 19, text: 'The first sentence is here.' },
+    { start: 13, end: 19, text: 'The second sentence is here.' },
+    { start: 17, end: 22, text: 'The third sentence is here.' },
+  ]);
+
+  assert.deepEqual(cues.map((cue) => [cue.start, cue.end]), [
+    [6, 13],
+    [13, 17],
+    [17, 22],
+  ]);
+  assert.equal(sentenceAtTime(cues, 18)?.text, 'The third sentence is here.');
+  assert.equal(sentenceAtTime(cues, 14)?.text, 'The second sentence is here.');
+  assert.equal(sentenceAtTime(cues, 8)?.text, 'The first sentence is here.');
 });
 
 test('limits an import window without moving the timestamps', () => {
