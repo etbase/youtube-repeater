@@ -4,7 +4,6 @@ import SpeedControl from './SpeedControl.jsx';
 
 function playLabel(isPlaying, phase) {
   if (isPlaying) return '暫停';
-  if (phase === 'waiting') return '結束等待';
   if (phase === 'complete') return '再練一次';
   return '播放';
 }

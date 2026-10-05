@@ -98,7 +98,7 @@ export default function App() {
             </span>
             <div className="brand-copy">
               <h1>YouTube 語言復讀學習機</h1>
-              <p className="brand-meta">跟讀練習 · A–B 復讀 · 一句一停 · 不下載影片</p>
+              <p className="brand-meta">跟讀練習 · A–B 復讀 · 不下載影片</p>
             </div>
           </div>
           <UrlForm onLoad={setSession} />
@@ -108,7 +108,6 @@ export default function App() {
       <main
         className="workspace"
         data-phase={practice.phase}
-        data-loops={practice.loopsCompleted}
         data-mode={practice.mode ?? 'off'}
       >
         <section className="stage-card" aria-label="播放器">

@@ -262,7 +262,6 @@ h1 {
 }
 
 .control-row,
-.deck-row,
 .speed-block,
 .transcript-head,
 .transcript-tools,
@@ -382,31 +381,8 @@ h1 {
   color: #fff;
 }
 
-.practice-deck {
-  display: grid;
-  gap: 10px;
+.segment-note {
   margin-top: 8px;
-  padding-top: 10px;
-  border-top: 1px solid #eef2f6;
-}
-
-.deck-row {
-  flex-wrap: wrap;
-}
-
-.count-readout {
-  margin-left: auto;
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.count-readout strong {
-  color: var(--ink);
-  font-size: 1.15rem;
-}
-
-.note {
   color: #9a3412;
   font-size: 0.88rem;
 }
@@ -423,11 +399,6 @@ h1 {
   color: var(--blue-deep);
 }
 
-.status-banner.is-wait {
-  background: #fff7ed;
-  color: #9a3412;
-}
-
 .status-kicker {
   margin-bottom: 2px;
   font-size: 0.75rem;
@@ -439,21 +410,6 @@ h1 {
   font-weight: 750;
 }
 
-.status-meta,
-.wait-num {
-  font-variant-numeric: tabular-nums;
-  font-weight: 750;
-}
-
-.wait-num {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  font-size: 1.6rem;
-  line-height: 1;
-}
-
-.wait-num small,
 .status-banner .btn {
   font-size: 0.9rem;
 }
@@ -850,9 +806,6 @@ button.sentence-time {
     margin-left: 0;
   }
 
-  .count-readout {
-    margin-left: 0;
-  }
 }
 
 @media (max-width: 520px) {

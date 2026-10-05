@@ -41,13 +41,11 @@ export function evaluateSegmentEnd({
   pointA,
   pointB,
   mode,
-  loopTarget,
-  loopsCompleted,
   gate,
   phase,
   playing,
 }) {
-  if (!mode || !playing || phase === 'waiting' || phase === 'complete') {
+  if (!mode || !playing || phase === 'complete') {
     return { type: 'none', gate };
   }
 
@@ -60,38 +58,19 @@ export function evaluateSegmentEnd({
     return { type: 'none', gate: false };
   }
 
-  if (gate || (Number.isFinite(loopTarget) && loopsCompleted >= loopTarget)) {
-    return { type: 'none', gate: true };
-  }
+  if (gate) return { type: 'none', gate: true };
 
   if (mode === 'once') {
     return {
       type: 'finish',
       gate: true,
-      loopsCompleted,
       seekTo: pointB,
     };
-  }
-
-  const nextCount = loopsCompleted + 1;
-  const finished = Number.isFinite(loopTarget) && nextCount >= loopTarget;
-  if (finished) {
-    return {
-      type: 'finish',
-      gate: true,
-      loopsCompleted: nextCount,
-      seekTo: pointB,
-    };
-  }
-
-  if (mode === 'pause') {
-    return { type: 'pause-wait', gate: true, loopsCompleted: nextCount };
   }
 
   return {
     type: 'seek-start',
     gate: true,
-    loopsCompleted: nextCount,
     seekTo: pointA,
   };
 }
