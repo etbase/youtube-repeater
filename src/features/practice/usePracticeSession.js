@@ -30,6 +30,7 @@ export function usePracticeSession(player, videoId, revision = 0) {
   const [waitSeconds, setWaitSecondsState] = useState(DEFAULT_WAIT_SECONDS);
   const [phase, setPhase] = useState('idle');
   const [waitRemaining, setWaitRemaining] = useState(0);
+  const [onceActive, setOnceActive] = useState(false);
 
   const pointARef = useRef(null);
   const pointBRef = useRef(null);
@@ -43,6 +44,7 @@ export function usePracticeSession(player, videoId, revision = 0) {
   const waitTokenRef = useRef(0);
   const pausedAtRef = useRef(null);
   const resumeTokenRef = useRef(0);
+  const onceRef = useRef(false);
 
   pointARef.current = pointA;
   pointBRef.current = pointB;
@@ -54,6 +56,11 @@ export function usePracticeSession(player, videoId, revision = 0) {
   function setPhaseBoth(next) {
     phaseRef.current = next;
     setPhase(next);
+  }
+
+  function setOnce(next) {
+    onceRef.current = next;
+    setOnceActive(next);
   }
 
   function resetCount() {
@@ -129,6 +136,7 @@ export function usePracticeSession(player, videoId, revision = 0) {
       pauseRepeatRef.current = false;
       setLoopEnabled(false);
       setPauseRepeatEnabled(false);
+      setOnce(false);
     }
     armSession();
   }
@@ -142,6 +150,7 @@ export function usePracticeSession(player, videoId, revision = 0) {
     pauseRepeatRef.current = false;
     setLoopEnabled(false);
     setPauseRepeatEnabled(false);
+    setOnce(false);
     armSession();
   }
 
@@ -152,6 +161,7 @@ export function usePracticeSession(player, videoId, revision = 0) {
     if (next) {
       pauseRepeatRef.current = false;
       setPauseRepeatEnabled(false);
+      setOnce(false);
     }
     armSession({ seekIfOutside: next });
   }
@@ -163,8 +173,31 @@ export function usePracticeSession(player, videoId, revision = 0) {
     if (next) {
       loopEnabledRef.current = false;
       setLoopEnabled(false);
+      setOnce(false);
     }
     armSession({ seekIfOutside: next });
+  }
+
+  function playSegment(start, end) {
+    const current = playerRef.current;
+    if (!current.ready) return;
+    const a = roundTime(start);
+    const b = roundTime(end);
+    if (!isValidSegment(a, b)) return;
+
+    pointARef.current = a;
+    pointBRef.current = b;
+    setPointA(a);
+    setPointB(b);
+
+    const keepMode = loopEnabledRef.current || pauseRepeatRef.current;
+    setOnce(!keepMode);
+    resetCount();
+    cancelWait();
+    gateRef.current = true;
+    setPhaseBoth('listening');
+    current.seekTo(a);
+    holdPlayback();
   }
 
   function setLoopTarget(value) {
@@ -225,7 +258,13 @@ export function usePracticeSession(player, videoId, revision = 0) {
       return;
     }
 
-    const mode = pauseRepeatRef.current ? 'pause' : loopEnabledRef.current ? 'loop' : null;
+    const mode = pauseRepeatRef.current
+      ? 'pause'
+      : loopEnabledRef.current
+        ? 'loop'
+        : onceRef.current
+          ? 'once'
+          : null;
     const time = current.getTime();
     if (shouldRestartFromA({
       time,
@@ -259,6 +298,7 @@ export function usePracticeSession(player, videoId, revision = 0) {
     setPointB(null);
     setLoopEnabled(false);
     setPauseRepeatEnabled(false);
+    setOnce(false);
     loopsRef.current = 0;
     setLoopsCompleted(0);
     gateRef.current = false;
@@ -321,7 +361,13 @@ export function usePracticeSession(player, videoId, revision = 0) {
         return;
       }
 
-      const mode = pauseRepeatRef.current ? 'pause' : loopEnabledRef.current ? 'loop' : null;
+      const mode = pauseRepeatRef.current
+        ? 'pause'
+        : loopEnabledRef.current
+          ? 'loop'
+          : onceRef.current
+            ? 'once'
+            : null;
       const decision = evaluateSegmentEnd({
         time,
         pointA: pointARef.current,
@@ -368,7 +414,7 @@ export function usePracticeSession(player, videoId, revision = 0) {
     return () => window.clearInterval(intervalId);
   }, [player.ready]);
 
-  const mode = pauseRepeatEnabled ? 'pause' : loopEnabled ? 'loop' : null;
+  const mode = pauseRepeatEnabled ? 'pause' : loopEnabled ? 'loop' : onceActive ? 'once' : null;
 
   return {
     pointA,
@@ -394,5 +440,6 @@ export function usePracticeSession(player, videoId, revision = 0) {
     togglePlay,
     seekBy,
     replay: replayFromA,
+    playSegment,
   };
 }

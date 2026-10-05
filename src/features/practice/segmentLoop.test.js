@@ -92,6 +92,13 @@ test('ignores the boundary while waiting, finished, or paused', () => {
   assert.equal(evaluateSegmentEnd({ ...base, mode: null }).type, 'none');
 });
 
+test('a chosen sentence plays once and stops at B', () => {
+  const decision = evaluateSegmentEnd({ ...base, mode: 'once', loopsCompleted: 2 });
+  assert.equal(decision.type, 'finish');
+  assert.equal(decision.seekTo, 10);
+  assert.equal(decision.loopsCompleted, 2);
+});
+
 test('restarts from A only when playback is outside the segment', () => {
   assert.equal(shouldRestartFromA({ time: 0, pointA: 2, pointB: 8, mode: 'loop' }), true);
   assert.equal(shouldRestartFromA({ time: 8, pointA: 2, pointB: 8, mode: 'pause' }), true);

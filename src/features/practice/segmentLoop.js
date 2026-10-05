@@ -64,6 +64,15 @@ export function evaluateSegmentEnd({
     return { type: 'none', gate: true };
   }
 
+  if (mode === 'once') {
+    return {
+      type: 'finish',
+      gate: true,
+      loopsCompleted,
+      seekTo: pointB,
+    };
+  }
+
   const nextCount = loopsCompleted + 1;
   const finished = Number.isFinite(loopTarget) && nextCount >= loopTarget;
   if (finished) {

@@ -1,5 +1,5 @@
-import { formatTime } from '../../lib/formatTime.js';
-import { IconBack, IconForward, IconPause, IconPlay } from '../../components/Icons.jsx';
+import { formatClock } from '../../lib/formatTime.js';
+import { IconPause, IconPlay } from '../../components/Icons.jsx';
 import SpeedControl from './SpeedControl.jsx';
 
 function playLabel(isPlaying, phase) {
@@ -12,31 +12,24 @@ function playLabel(isPlaying, phase) {
 export default function TransportBar({ player, practice }) {
   const label = playLabel(player.isPlaying, practice.phase);
   const PlayIcon = player.isPlaying ? IconPause : IconPlay;
+  const canMark = player.ready;
 
   return (
-    <section className="card transport" aria-label="播放控制">
-      <div className="time-row">
-        <p className="time-readout">
-          <span className="time-now">{formatTime(player.currentTime)}</span>
-          <span className="time-sep">/</span>
-          <span className="time-dur">{formatTime(player.duration)}</span>
-        </p>
-      </div>
-
-      <div className="transport-buttons">
+    <div className="transport">
+      <div className="control-row">
         <button
           type="button"
-          className="btn btn-secondary"
+          className="chip-btn"
           data-action="seek-back"
+          aria-label="後退 5 秒"
           onClick={() => practice.seekBy(-5)}
           disabled={!player.ready}
         >
-          <IconBack />
-          <span>後退 5 秒</span>
+          <span aria-hidden="true">◀ 5s</span>
         </button>
         <button
           type="button"
-          className="btn btn-primary play-btn"
+          className="chip-btn is-play"
           data-action="play"
           aria-pressed={player.isPlaying}
           onClick={practice.togglePlay}
@@ -47,14 +40,47 @@ export default function TransportBar({ player, practice }) {
         </button>
         <button
           type="button"
-          className="btn btn-secondary"
+          className="chip-btn"
           data-action="seek-forward"
+          aria-label="前進 5 秒"
           onClick={() => practice.seekBy(5)}
           disabled={!player.ready}
         >
-          <IconForward />
-          <span>前進 5 秒</span>
+          <span aria-hidden="true">5s ▶</span>
         </button>
+        <button
+          type="button"
+          className="chip-btn"
+          data-action="set-a"
+          onClick={practice.setPointA}
+          disabled={!canMark}
+        >
+          A 起點
+        </button>
+        <button
+          type="button"
+          className="chip-btn"
+          data-action="set-b"
+          onClick={practice.setPointB}
+          disabled={!canMark}
+        >
+          B 終點
+        </button>
+        <button
+          type="button"
+          className="chip-btn"
+          data-action="toggle-loop"
+          aria-pressed={practice.loopEnabled}
+          disabled={!practice.segmentValid && !practice.loopEnabled}
+          onClick={() => practice.setLoopEnabled(!practice.loopEnabled)}
+        >
+          AB 循環
+        </button>
+        <p className="time-readout">
+          <span className="time-now">{formatClock(player.currentTime)}</span>
+          <span className="time-sep"> / </span>
+          <span className="time-dur">{formatClock(player.duration)}</span>
+        </p>
       </div>
 
       <SpeedControl
@@ -62,6 +88,6 @@ export default function TransportBar({ player, practice }) {
         actualRate={player.actualRate}
         onChange={player.setPlaybackRate}
       />
-    </section>
+    </div>
   );
 }

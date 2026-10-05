@@ -10,7 +10,7 @@ export default function PracticeStatus({ practice }) {
     return (
       <div className="status-banner is-wait" role="status">
         <div>
-          <p className="status-kicker">Repeat</p>
+          <p className="status-kicker">跟讀</p>
           <p className="status-title">請跟著說這一句</p>
         </div>
         <p className="wait-num">
@@ -25,7 +25,7 @@ export default function PracticeStatus({ practice }) {
     return (
       <div className="status-banner" role="status">
         <div>
-          <p className="status-kicker">Complete</p>
+          <p className="status-kicker">完成</p>
           <p className="status-title">這一段練完了</p>
         </div>
         <button type="button" className="btn btn-light" data-action="replay" onClick={practice.replay}>
@@ -40,8 +40,8 @@ export default function PracticeStatus({ practice }) {
   return (
     <div className="status-banner" role="status" data-phase={practice.phase}>
       <div>
-        <p className="status-kicker">{looping ? 'A–B Loop' : 'Listen'}</p>
-        <p className="status-title">{looping ? '循環播放中' : '聆聽這一句'}</p>
+        <p className="status-kicker">{looping ? '循環' : '聆聽'}</p>
+        <p className="status-title">{looping ? '循環播放中' : '正在播放這一句'}</p>
       </div>
       <p className="status-meta">
         已循環 {practice.loopsCompleted}

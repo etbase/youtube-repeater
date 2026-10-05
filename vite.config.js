@@ -14,7 +14,10 @@ function sourceEntryPlugin() {
         return html
           .replace('href="./public/favicon.svg"', 'href="/favicon.svg"')
           .replace(/\s*<link rel="stylesheet" href="\.\/assets\/app\.css" \/>/, '')
-          .replace('src="./assets/app.js"', 'src="/src/main.jsx"');
+          .replace(
+            '<script src="./assets/app.js"></script>',
+            '<script type="module" src="/src/main.jsx"></script>',
+          );
       },
     },
   };

@@ -17,31 +17,25 @@ export default function UrlForm({ onLoad }) {
   }
 
   return (
-    <form className="card url-card" onSubmit={submit}>
-      <label htmlFor="youtube-url">YouTube 網址</label>
-      <div className="url-row">
-        <input
-          id="youtube-url"
-          name="youtube-url"
-          value={value}
-          onChange={(event) => {
-            setValue(event.target.value);
-            if (error) setError('');
-          }}
-          placeholder="https://www.youtube.com/watch?v=..."
-          inputMode="url"
-          autoCapitalize="off"
-          autoCorrect="off"
-          spellCheck="false"
-          autoComplete="off"
-        />
-        <button className="btn btn-primary" type="submit">載入影片</button>
-      </div>
-      {error ? (
-        <p className="form-error" role="alert">{error}</p>
-      ) : (
-        <p className="form-hint">支援一般連結、youtu.be、Shorts 與嵌入網址。</p>
-      )}
+    <form className="url-form" onSubmit={submit}>
+      <input
+        id="youtube-url"
+        name="youtube-url"
+        value={value}
+        onChange={(event) => {
+          setValue(event.target.value);
+          if (error) setError('');
+        }}
+        placeholder="貼上 YouTube 網址，例如 https://youtu.be/... 或 Shorts 網址"
+        inputMode="url"
+        autoCapitalize="off"
+        autoCorrect="off"
+        spellCheck="false"
+        autoComplete="off"
+        aria-label="YouTube 網址"
+      />
+      <button className="load-btn" type="submit">載入影片</button>
+      {error ? <p className="form-error" role="alert">{error}</p> : null}
     </form>
   );
 }
