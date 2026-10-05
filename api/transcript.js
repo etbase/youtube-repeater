@@ -1,4 +1,4 @@
-import { TranscriptFailure, fetchYouTubeTranscript } from './youtubeTranscript.js';
+import { TranscriptFailure, fetchYouTubeTranscript } from './supadataTranscript.js';
 
 const USER_MESSAGE = '無法自動取得這部影片的字幕';
 
