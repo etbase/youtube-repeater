@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { parseTranscriptXml, pickEnglishTrack } from './youtubeTranscript.js';
+import { parseTranscriptJson3, parseTranscriptXml, pickEnglishTrack } from './youtubeTranscript.js';
 
 test('prefers a human English track over auto-generated English', () => {
   const track = pickEnglishTrack([
@@ -26,6 +26,18 @@ test('uses auto-generated English only when no human English track exists', () =
 
 test('returns no track when the video has no English captions', () => {
   assert.equal(pickEnglishTrack([{ languageCode: 'ja' }, { languageCode: 'de' }]), null);
+});
+
+test('parses json3 caption events into start and end seconds', () => {
+  const cues = parseTranscriptJson3({
+    events: [
+      { tStartMs: 1200, dDurationMs: 2160, segs: [{ utf8: 'All right, so here we are, in front of the\nelephants' }] },
+      { tStartMs: 9000 },
+    ],
+  });
+  assert.deepEqual(cues, [
+    { start: 1.2, end: 3.36, text: 'All right, so here we are, in front of the elephants' },
+  ]);
 });
 
 test('parses timed text into start and end seconds', () => {
