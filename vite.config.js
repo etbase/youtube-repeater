@@ -1,0 +1,10 @@
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+// GitHub Pages project sites need the repo path, for example /youtube-repeater/.
+const base = process.env.VITE_PAGES_BASE || '/';
+
+export default defineConfig({
+  plugins: [react()],
+  base,
+});
