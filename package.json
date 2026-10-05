@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node --test src/lib/youtubeUrl.test.js src/lib/formatTime.test.js src/features/practice/segmentLoop.test.js src/features/transcript/parseTranscript.test.js src/features/transcript/subtitleText.test.js src/features/transcript/parseSubtitles.test.js src/features/transcript/subtitleService.test.js"
+    "test": "node --test src/lib/youtubeUrl.test.js src/lib/formatTime.test.js src/features/practice/segmentLoop.test.js src/features/transcript/parseTranscript.test.js src/features/transcript/subtitleText.test.js src/features/transcript/parseSubtitles.test.js src/features/transcript/subtitleService.test.js api/youtubeTranscript.test.js"
   },
   "dependencies": {
     "@breezystack/lamejs": "^1.2.7",

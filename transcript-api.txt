@@ -1,0 +1,3 @@
+# 部署到 Vercel 之後，把下面這一行改成你的 API 網址。
+# 井字號開頭的行不會被讀取。
+# https://你的專案名稱.vercel.app/api/transcript
