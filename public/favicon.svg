@@ -4,18 +4,26 @@
   <defs>
     <style>
       .st0 {
-        fill: #fff;
+        fill: url(#linear-gradient);
       }
 
       .st1 {
-        fill: url(#_未命名漸層_8);
+        fill: #fff;
+      }
+
+      .st2 {
+        fill: none;
+        stroke: #fff;
+        stroke-miterlimit: 333.3;
+        stroke-width: 2.1px;
       }
     </style>
-    <linearGradient id="_未命名漸層_8" data-name="未命名漸層 8" x1=".6" y1="16" x2="31.4" y2="16" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#158cff"/>
-      <stop offset="1" stop-color="#1538ff"/>
+    <linearGradient id="linear-gradient" x1="32.7" y1="25.6" x2="-.7" y2="6.4" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7ebee8"/>
+      <stop offset="1" stop-color="#004c98"/>
     </linearGradient>
   </defs>
-  <path class="st1" d="M25.8,1.3H6.2C3.1,1.3.6,3.8.6,6.9h0v14c0,3.1,2.5,5.6,5.6,5.6h5.6l4.2,4.2,4.2-4.2h5.6c3.1,0,5.6-2.5,5.6-5.6V6.9c0-3.1-2.5-5.6-5.6-5.6Z"/>
-  <polygon class="st0" points="25.3 13.9 9.7 21.2 9.7 6.6 25.3 13.9"/>
+  <rect class="st0" x=".5" y=".5" width="31" height="31" rx="5.1" ry="5.1"/>
+  <polygon class="st1" points="22.1 14.2 11 19.4 11 9 22.1 14.2"/>
+  <path class="st2" d="M23.4,4.7h-14.8c-2.3,0-4.2,1.9-4.2,4.2h0v10.6c0,2.3,1.9,4.2,4.2,4.2h4.2l3.2,3.2,3.2-3.2h4.2c2.3,0,4.2-1.9,4.2-4.2v-10.6c0-2.3-1.9-4.2-4.2-4.2Z"/>
 </svg>
