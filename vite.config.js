@@ -44,9 +44,10 @@ function sourceEntryPlugin() {
       order: 'pre',
       handler(html) {
         return html
+          .replace('href="./public/favicon.svg"', 'href="/favicon.svg"')
           .replace(/\s*<link rel="stylesheet" href="\.\/assets\/app\.css" \/>/, '')
           .replace(
-            '<script src="./assets/app.js"></script>',
+            '<script type="module" src="./assets/app.js"></script>',
             '<script type="module" src="/src/main.jsx"></script>',
           );
       },
