@@ -44,7 +44,6 @@ function sourceEntryPlugin() {
       order: 'pre',
       handler(html) {
         return html
-          .replace('href="./public/favicon.svg"', 'href="/favicon.svg"')
           .replace(/\s*<link rel="stylesheet" href="\.\/assets\/app\.css" \/>/, '')
           .replace(
             '<script src="./assets/app.js"></script>',
